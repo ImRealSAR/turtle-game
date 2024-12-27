@@ -13,11 +13,14 @@ def toggle_mode():
         drawer.color("white")
         turtle.color("white")
         current_mode = "dark"
+        font_setup = ("Arial", 32)
     else:
         screen.bgcolor("white")
         drawer.color("black")
         turtle.color("black")
         current_mode = "light"
+        
+        font_setup = ("Arial", 32,)
 
 # Add a button for toggling modes
 screen.listen()
@@ -104,36 +107,55 @@ def click_handler(x, y):
     global current_player, X_score, O_score
     for (row, col), (cx, cy) in grid_positions.items():
         if cx - 100 < x < cx + 100 and cy - 100 < y < cy + 100:
-            if board[row][col] == "":
+            if board[row][col] == '':
                 board[row][col] = current_player
-                if current_player == "X":
+                if current_player == 'X':
                     draw_x(cx, cy)
-                    current_player = "O"
+                    current_player = 'O'
                 else:
                     draw_o(cx, cy)
-                    current_player = "X"
+                    current_player = 'X'
                 winner = check_winner()
                 if winner:
                     turtle.goto(200, 300)
-                    print(winner)
                     if winner == "X":
                         X_score += 1
                     elif winner == "O":
                         O_score += 1
+
                     turtle.clear()
                     turtle.write(f"Player {winner} wins!", font=font_setup)
                     turtle.goto(-35, 350)
                     turtle.write(f"{X_score} - {O_score}", font=font_setup)
-                    reset_game()
+
+                    
+                    screen.onscreenclick(None)
+                    button = turtle.Turtle()
+                    button.penup()
+                    button.hideturtle()
+                    button.goto(0, -400)
+                    button.write("Click here to Restart", align="center", font=("Arial", 24, "bold"))
+
+                    def restart_button_click(x, y):
+                        if -150 < x < 150 and -430 < y < -370:
+                            button.clear()
+                            screen.onscreenclick(click_handler)
+                            reset_game()
+
+                    screen.onscreenclick(restart_button_click)
                     return
                 break
 
+
 def reset_game():
     global board, current_player
-    board = [["" for _ in range(3)] for _ in range(3)]
-    current_player = "X"
+    board = [['' for _ in range(3)] for _ in range(3)]
+    current_player = 'X'
     drawer.clear()
+    turtle.clear()
     draw_board()
+    turtle.goto(-35, 350)
+    turtle.write(f"{X_score} - {O_score}", font=font_setup)
 
 draw_board()
 screen.onclick(click_handler)
